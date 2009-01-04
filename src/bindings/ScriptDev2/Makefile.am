@@ -49,6 +49,7 @@ include/sc_instance.cpp \
 include/sc_instance.h \
 scripts/battlegrounds/battleground.cpp \
 scripts/custom/scriptedAI.cpp \
+scripts/custom/vstupAI.cpp \
 scripts/world/areatrigger_scripts.cpp \
 scripts/world/go_scripts.cpp \
 scripts/world/guards.cpp \

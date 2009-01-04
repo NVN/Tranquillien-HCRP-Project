@@ -71,7 +71,7 @@ volatile uint32 World::m_worldLoopCounter = 0;
 float World::m_MaxVisibleDistanceOnContinents = DEFAULT_VISIBILITY_DISTANCE;
 float World::m_MaxVisibleDistanceInInctances  = DEFAULT_VISIBILITY_INSTANCE;
 float World::m_MaxVisibleDistanceInBGArenas   = DEFAULT_VISIBILITY_BGARENAS;
-float World::m_MaxVisibleDistanceForObject    = DEFAULT_VISIBILITY_DISTANCE;
+float World::m_MaxVisibleDistanceForObject    = 600;
 
 float World::m_MaxVisibleDistanceInFlight     = DEFAULT_VISIBILITY_DISTANCE;
 float World::m_VisibleUnitGreyDistance        = 0;

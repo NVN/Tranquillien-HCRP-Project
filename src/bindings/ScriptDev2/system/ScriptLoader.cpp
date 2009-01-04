@@ -9,6 +9,7 @@ extern void AddSC_battleground();
 
 //custom
 extern void AddSC_npc_building_mount_guard();
+extern void AddSC_vstup_AI();
 
 //world
 extern void AddSC_areatrigger_scripts();
@@ -27,6 +28,7 @@ void AddScripts()
 
     //custom
 	AddSC_npc_building_mount_guard();
+	AddSC_vstup_AI();
 
     //world
     AddSC_areatrigger_scripts();
