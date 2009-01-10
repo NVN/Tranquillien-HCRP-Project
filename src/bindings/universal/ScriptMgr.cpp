@@ -299,6 +299,14 @@ bool ItemUse( Player *player, Item* _Item, SpellCastTargets const& targets)
 }
 
 MANGOS_DLL_EXPORT
+	bool ItemDurationExpire( Player *player, Item* _Item )
+	Script *tmpscript = m_scripts[_Item->GetProto()->ScriptId];
+if (!tmpscript || !tmpscript->pItemDurationExpire)
+
+	return false;
+
+return tmpscript->pItemDurationExpire(player,_Item);
+
 CreatureAI* GetAI(Creature *_Creature )
 {
     Script *tmpscript = m_scripts[_Creature->GetScriptId()];

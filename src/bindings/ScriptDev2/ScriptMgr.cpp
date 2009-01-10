@@ -492,6 +492,15 @@ bool ItemUse(Player* pPlayer, Item* _Item, SpellCastTargets const& targets)
 }
 
 MANGOS_DLL_EXPORT
+bool ItemDurationExpire( Player *player, Item* _Item )
+{
+	Script *tmpscript = m_scripts[_Item->GetProto()->ScriptId];
+	if (!tmpscript || !tmpscript->pItemDurationExpire)
+		return true;
+	return tmpscript->pItemDurationExpire(player,_Item);
+}
+
+MANGOS_DLL_EXPORT
 bool EffectDummyCreature(Unit *pCaster, uint32 spellId, SpellEffectIndex effIndex, Creature *pCreatureTarget)
 {
     Script *tmpscript = m_scripts[pCreatureTarget->GetScriptId()];

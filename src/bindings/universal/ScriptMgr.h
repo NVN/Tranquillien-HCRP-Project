@@ -43,8 +43,8 @@ struct Script
         pGossipSelectWithCode(NULL), pGOGossipSelectWithCode(NULL),
         pQuestSelect(NULL), pQuestComplete(NULL), pNPCDialogStatus(NULL), pGODialogStatus(NULL), pChooseReward(NULL),
         pItemHello(NULL), pGOHello(NULL), pAreaTrigger(NULL), pItemQuestAccept(NULL), pGOQuestAccept(NULL),
-        pGOChooseReward(NULL), pItemUse(NULL), pEffectDummyGameObj(NULL), pEffectDummyCreature(NULL),
-        pEffectDummyItem(NULL), pEffectAuraDummy(NULL), GetAI(NULL)
+        pGOChooseReward(NULL), pItemUse(NULL), pItemDurationExpire(NULL), pEffectDummyGameObj(NULL),
+        pEffectDummyCreature(NULL), pEffectDummyItem(NULL), pEffectAuraDummy(NULL), GetAI(NULL)
     {}
 
     std::string Name;
@@ -69,7 +69,8 @@ struct Script
     bool (*pGOQuestAccept       )(Player *player, GameObject *_GO, Quest const*_Quest );
     bool (*pGOChooseReward      )(Player *player, GameObject *_GO, Quest const*_Quest, uint32 opt );
     bool (*pItemUse             )(Player *player, Item* _Item, SpellCastTargets const& targets);
-    bool (*pEffectDummyGameObj  )(Unit*, uint32, SpellEffectIndex, GameObject* );
+    bool (*pItemDurationExpire  )(Player *player, Item* _Item);
+	bool (*pEffectDummyGameObj  )(Unit*, uint32, SpellEffectIndex, GameObject* );
     bool (*pEffectDummyCreature )(Unit*, uint32, SpellEffectIndex, Creature* );
     bool (*pEffectDummyItem     )(Unit*, uint32, SpellEffectIndex, Item* );
     bool (*pEffectAuraDummy     )(const Aura*, bool);
