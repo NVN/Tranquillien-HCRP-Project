@@ -1,0 +1,29 @@
+commit b80f9ca22e36b609e048da7e9816af8af67f761f
+Author: Lightguard <Lightguard@tauri.hu>
+Date:   Tue Mar 9 12:00:53 2010 +0100
+
+    [9558] Fix a typo from prev. commit:/
+
+diff --git a/src/game/SpellAuras.cpp b/src/game/SpellAuras.cpp
+index d59c171..636e64c 100644
+--- a/src/game/SpellAuras.cpp
++++ b/src/game/SpellAuras.cpp
+@@ -6259,7 +6259,7 @@ void Aura::HandleSpellSpecificBoosts(bool apply)
+                     return;
+ 
+                 // Glyph of Power Word: Shield
+-                if(Aura* glyph = caster->GetAura(55672,0))
++                if (Aura* glyph = caster->GetAura(55672, EFFECT_INDEX_0))
+                 {
+                     int32 heal = (glyph->GetModifier()->m_amount * m_modifier.m_amount)/100;
+                     caster->CastCustomSpell(m_target, 56160, &heal, NULL, NULL, true, 0, this);
+diff --git a/src/shared/revision_nr.h b/src/shared/revision_nr.h
+index 3c87a3e..2911c97 100644
+--- a/src/shared/revision_nr.h
++++ b/src/shared/revision_nr.h
+@@ -1,4 +1,4 @@
+ #ifndef __REVISION_NR_H__
+ #define __REVISION_NR_H__
+- #define REVISION_NR "9557"
++ #define REVISION_NR "9558"
+ #endif // __REVISION_NR_H__

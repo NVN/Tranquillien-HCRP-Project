@@ -1,0 +1,125 @@
+commit 3d9de856bbd7ddaad905b4a3dd71d945d2d921b1
+Author: Xadiaris <xadiaris@brainsoft.gr>
+Date:   Sat Mar 13 13:21:34 2010 +0200
+
+    Improved quest POI's code now with db support Quest Tracking Feature is full working
+
+diff --git a/src/game/ObjectMgr.cpp b/src/game/ObjectMgr.cpp
+index b6997b7..308aef3 100644
+--- a/src/game/ObjectMgr.cpp
++++ b/src/game/ObjectMgr.cpp
+@@ -6438,8 +6438,8 @@ void ObjectMgr::LoadQuestPOI()
+ 
+     uint32 count = 0;
+ 
+-    //                                                0        1         2      3     4     5     6
+-    QueryResult *result = WorldDatabase.Query("SELECT questId, objIndex, mapId, unk1, unk2, unk3, unk4 FROM quest_poi");
++    //                                                0        1      2         3      4       5        6     7
++    QueryResult *result = WorldDatabase.Query("SELECT questId, poiId, objIndex, mapId, areaId, floorId, unk3, unk4 FROM quest_poi");
+ 
+     if(!result)
+     {
+@@ -6460,16 +6460,17 @@ void ObjectMgr::LoadQuestPOI()
+         bar.step();
+ 
+         uint32 questId  = fields[0].GetUInt32();
+-        int32 objIndex  = fields[1].GetInt32();
+-        uint32 mapId    = fields[2].GetUInt32();
+-        uint32 unk1     = fields[3].GetUInt32();
+-        uint32 unk2     = fields[4].GetUInt32();
+-        uint32 unk3     = fields[5].GetUInt32();
+-        uint32 unk4     = fields[6].GetUInt32();
++        uint32 poiId    = fields[1].GetUInt32();
++        int32 objIndex  = fields[2].GetInt32();
++        uint32 mapId    = fields[3].GetUInt32();
++        uint32 areaId   = fields[4].GetUInt32();
++        uint32 floorId  = fields[5].GetUInt32();
++        uint32 unk3     = fields[6].GetUInt32();
++        uint32 unk4     = fields[7].GetUInt32();
+ 
+-        QuestPOI POI(objIndex, mapId, unk1, unk2, unk3, unk4);
++        QuestPOI POI(poiId, objIndex, mapId, areaId, floorId, unk3, unk4);
+ 
+-        QueryResult *points = WorldDatabase.PQuery("SELECT x, y FROM quest_poi_points WHERE questId='%u' AND objIndex='%i'", questId, objIndex);
++        QueryResult *points = WorldDatabase.PQuery("SELECT x, y FROM quest_poi_points WHERE questId='%u' AND poiId='%i'", questId, poiId);
+ 
+         if(points)
+         {
+diff --git a/src/game/ObjectMgr.h b/src/game/ObjectMgr.h
+index c16b3d7..5b193e9 100644
+--- a/src/game/ObjectMgr.h
++++ b/src/game/ObjectMgr.h
+@@ -260,16 +260,17 @@ struct QuestPOIPoint
+ 
+ struct QuestPOI
+ {
++    uint32 PoiId;
+     int32 ObjectiveIndex;
+     uint32 MapId;
+-    uint32 Unk1;
+-    uint32 Unk2;
++    uint32 AreaId;
++    uint32 FloorId;
+     uint32 Unk3;
+     uint32 Unk4;
+     std::vector<QuestPOIPoint> points;
+ 
+-    QuestPOI() : ObjectiveIndex(0), MapId(0), Unk1(0), Unk2(0), Unk3(0), Unk4(0) {}
+-    QuestPOI(int32 objIndex, uint32 mapId, uint32 unk1, uint32 unk2, uint32 unk3, uint32 unk4) : ObjectiveIndex(objIndex), MapId(mapId), Unk1(unk1), Unk2(unk2), Unk3(unk3), Unk4(unk4) {}
++    QuestPOI() : PoiId(0), ObjectiveIndex(0), MapId(0), AreaId(0), FloorId(0), Unk3(0), Unk4(0) {}
++    QuestPOI(uint32 poiId, int32 objIndex, uint32 mapId, uint32 areaId, uint32 floorId, uint32 unk3, uint32 unk4) : PoiId(poiId), ObjectiveIndex(objIndex), MapId(mapId), AreaId(areaId), FloorId(floorId), Unk3(unk3), Unk4(unk4) {}
+ };
+ 
+ typedef std::vector<QuestPOI> QuestPOIVector;
+diff --git a/src/game/QueryHandler.cpp b/src/game/QueryHandler.cpp
+index 5e3f8c8..67bac84 100644
+--- a/src/game/QueryHandler.cpp
++++ b/src/game/QueryHandler.cpp
+@@ -485,7 +485,7 @@ void WorldSession::HandleQueryQuestsCompleted( WorldPacket & /*recv_data */)
+     SendPacket(&data);
+ }
+ 
+-void WorldSession::HandleQuestPOIQuery(WorldPacket& recv_data)
++void WorldSession::HandleQuestPOIQuery( WorldPacket & recv_data )
+ {
+     uint32 count;
+     recv_data >> count;                                     // quest count, max=25
+@@ -520,16 +520,15 @@ void WorldSession::HandleQuestPOIQuery(WorldPacket& recv_data)
+                 data << uint32(questId);                    // quest ID
+                 data << uint32(POI->size());                // POI count
+ 
+-                int index = 0;
+                 for(QuestPOIVector::const_iterator itr = POI->begin(); itr != POI->end(); ++itr)
+                 {
+-                    data << uint32(index);                  // POI index
+-                    data << int32(itr->ObjectiveIndex);     // objective index
+-                    data << uint32(itr->MapId);             // mapid
+-                    data << uint32(itr->Unk1);              // unknown
+-                    data << uint32(itr->Unk2);              // unknown
+-                    data << uint32(itr->Unk3);              // unknown
+-                    data << uint32(itr->Unk4);              // unknown
++                    data << uint32(itr->PoiId);             // POI index
++                    data << int32(itr->ObjectiveIndex);     // Objective index
++                    data << uint32(itr->MapId);             // Mapid
++                    data << uint32(itr->AreaId);            // WorldMapArea index
++                    data << uint32(itr->FloorId);           // Floorid
++                    data << uint32(itr->Unk3);              // Unknown
++                    data << uint32(itr->Unk4);              // Unknown
+                     data << uint32(itr->points.size());     // POI points count
+ 
+                     for(std::vector<QuestPOIPoint>::const_iterator itr2 = itr->points.begin(); itr2 != itr->points.end(); ++itr2)
+@@ -537,7 +536,6 @@ void WorldSession::HandleQuestPOIQuery(WorldPacket& recv_data)
+                         data << int32(itr2->x);             // POI point x
+                         data << int32(itr2->y);             // POI point y
+                     }
+-                    ++index;
+                 }
+             }
+             else
+@@ -553,7 +551,6 @@ void WorldSession::HandleQuestPOIQuery(WorldPacket& recv_data)
+         }
+     }
+ 
+-    data.hexlike();
+     SendPacket(&data);
+ }
